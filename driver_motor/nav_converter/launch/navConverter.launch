@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+  <rosparam command="load" file="$(find agv_define)/param/robot_param/robot.yaml" /> 
+  <node pkg="nav_converter" type="nav_converter_node" name="nav_converter"> </node>
+  <node pkg="nav_converter" type="odometry" name="odometry"> </node>
+</launch>

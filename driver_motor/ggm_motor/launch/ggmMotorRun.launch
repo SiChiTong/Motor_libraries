@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+
+  <rosparam command="load" file="$(find agv_define)/param/robot_param/motorInfomation.yaml"/> 
+  <arg name="driver_name"        default="ggm"/>
+  <node pkg="ggm_motor" type="ggm_motor_node" name="driver_node">
+    <param name="baudrate" type="int" value="19200"/> 
+    <param name="port" type="str" value="/dev/USB_MD200"/>
+  </node>
+
+</launch>
