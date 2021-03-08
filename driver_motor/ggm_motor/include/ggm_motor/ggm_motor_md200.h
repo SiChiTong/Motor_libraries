@@ -7,6 +7,15 @@
 #include <boost/thread/thread.hpp>
 
 GGM_MOTOR_NAMESPACE_BEGIN 
+
+// shortcut to read a member from a XmlRpcValue, or to return a defaultvalue, it the member does not exist
+template<class T> static T readMember(XmlRpc::XmlRpcValue & value, const std::string & member, const T & defaultvalue)
+{
+  if(value.hasMember(member))
+    return value[member];
+  return defaultvalue;
+}
+
 class Driver_md200: public rs485
 {
 private:

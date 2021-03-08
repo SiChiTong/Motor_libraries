@@ -25,8 +25,8 @@ int rs485::_rs485_connect(rs485_t &ctx)
     {
         std::stringstream e;
         e << ctx._port <<" is failed: " << strerror(errno);
-        this->error_msg = e.str();
-        this->_connected = false;
+        error_msg = e.str();
+        _connected = false;
         return -1;
     }
     else
@@ -47,19 +47,19 @@ int rs485::_rs485_connect(rs485_t &ctx)
     /*  C_ISPEED     Input baud (new interface)
      *  C_OSPEED     Output baud (new interface)
      */
-    speed_t speed = this->setBaudRate(ctx._baud);
+    speed_t speed = setBaudRate(ctx._baud);
     /* Set the baud rate */
     if ((cfsetispeed(&tios, speed) < 0) ||
         (cfsetospeed(&tios, speed) < 0)) 
     {
         close(ctx.s);
         ctx.s = -1;
-        this->_connected = false;
+        _connected = false;
         return -1;
     }
-    this->setDataBits(tios,ctx._data_bit);
-    this->setStopBits(tios,ctx._stop_bit);
-    this->setParity(tios, ctx._parity);
+    setDataBits(tios,ctx._data_bit);
+    setStopBits(tios,ctx._stop_bit);
+    setParity(tios, ctx._parity);
     
     /* Read the man page of termios if you need more information.
      * This field isn't used on POSIX systems
@@ -153,10 +153,10 @@ int rs485::_rs485_connect(rs485_t &ctx)
         ROS_ERROR("Can't get terminal parameters");
         close(ctx.s);
         ctx.s = -1;
-        this->_connected = false;
+        _connected = false;
         return -1;
     }
-    this->_connected = true;
+    _connected = true;
     return 0;
 }
 
@@ -165,7 +165,7 @@ int rs485::_rs485_connect(rs485_t &ctx)
  */
 void rs485::reconnect(void)
 {
-    this->_rs485_connect(this->ctx);
+    _rs485_connect(ctx);
 }
 
 /*
@@ -179,21 +179,21 @@ void rs485::reconnect(void)
 void rs485::new_port(const char* devfile,unsigned int baud, parity_t parity, 
                                         data_bits_t data_bit,stop_bits_t stop_bit)
 {
-    this->ctx._port = devfile;
-    this->ctx._baud = baud;
-    this->ctx._parity = parity;
-    this->ctx._data_bit = data_bit;
-    this->ctx._stop_bit = stop_bit;
-    this->_connected = false;
+    ctx._port = devfile;
+    ctx._baud = baud;
+    ctx._parity = parity;
+    ctx._data_bit = data_bit;
+    ctx._stop_bit = stop_bit;
+    _connected = false;
     if(parity == PARITY_EVEN || parity == PARITY_ODD)
-        this->size_pkg++;
+        size_pkg++;
     switch(stop_bit)
     {
         case STOPBIT_1:
-            this->size_pkg++;
+            size_pkg++;
             break;
         case STOPBIT_2:
-            this->size_pkg +=2;
+            size_pkg +=2;
             break;
         default:
             break;
@@ -202,22 +202,34 @@ void rs485::new_port(const char* devfile,unsigned int baud, parity_t parity,
     switch(data_bit)
     {
         case DATABIT_5:
-            this->size_pkg += 5;
+            size_pkg += 5;
             break;
         case DATABIT_6:
-            this->size_pkg += 6;
+            size_pkg += 6;
             break;
         case DATABIT_7:
-            this->size_pkg += 7;
+            size_pkg += 7;
             break;
         case DATABIT_8:
-            this->size_pkg += 8;
+            size_pkg += 8;
             break;
         default:
             break;
     }
-    this->size_pkg +=2;  // bit start and stop
-    //ROS_INFO("Size package %d bit", this->size_pkg);
+    size_pkg +=2;  // bit start and stop
+
+    switch(baud)
+    {
+    case 19200:
+        param_safety = 1.5;
+        break;
+    case 115200:
+        param_safety = 3.5;
+        break;
+    default:
+        param_safety = 1.5;
+        break;
+    }
 }
 
 /*
@@ -225,7 +237,6 @@ void rs485::new_port(const char* devfile,unsigned int baud, parity_t parity,
  */
 void rs485::close_port()
 {
-    close(this->ctx.s);
 }
 
 /*
@@ -236,11 +247,12 @@ void rs485::close_port()
  */
 ssize_t rs485::sendMsgs(uint8_t *to_send, uint16_t length)
 {
-    float time = HSAT*1000000/(this->ctx._baud / (this->size_pkg * length));
-    memset((to_send + length),'\0',1);
-    tcflush(this->ctx.s, TCIFLUSH); 
-    ssize_t num = write(this->ctx.s, to_send, (size_t)length);
+    float time = param_safety*1000000/(ctx._baud / (size_pkg * length));
+    //for(int i = 0; i < length; i++) printf("0x%x ",to_send[i]);
+    //printf("\n");
     usleep(time);
+    memset((to_send + length),'\0',1);
+    ssize_t num = write(ctx.s, to_send, (size_t)length);
     return num;
 }
 
@@ -252,7 +264,7 @@ ssize_t rs485::sendMsgs(uint8_t *to_send, uint16_t length)
 ssize_t rs485::receiveMsgs(uint8_t *buffer) const 
 {
     memset(buffer,'\0',sizeof(buffer));
-    return read(this->ctx.s, (char *) buffer,MAX_MSG_LENGTH);
+    return read(ctx.s, (char *) buffer,MAX_MSG_LENGTH);
 }
 
 /*
@@ -265,8 +277,8 @@ ssize_t rs485::receiveMsgs(uint8_t *buffer) const
  */
 rs485::rs485(const char* devfile, unsigned int baud, parity_t parity, data_bits_t data_bit,stop_bits_t stop_bit)
 {
-    this->new_port(devfile, baud, parity, data_bit, stop_bit);
-    this->_rs485_connect(this->ctx);
+    new_port(devfile, baud, parity, data_bit, stop_bit);
+    _rs485_connect(ctx);
 }
 
 /*
@@ -274,5 +286,5 @@ rs485::rs485(const char* devfile, unsigned int baud, parity_t parity, data_bits_
  */
 rs485::~rs485()
 {
-
+   
 }

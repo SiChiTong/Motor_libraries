@@ -25,7 +25,7 @@
 #define    BAD_CON                 -1
 #define    BAD_CONFIG              0
 #define    WORD_BITS               65535
-#define    MAX_MSG_LENGTH          1024
+
 /*
  * Commonly use function codes
  */

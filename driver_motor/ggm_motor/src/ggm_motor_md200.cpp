@@ -1,12 +1,5 @@
 #include "ggm_motor/ggm_motor_md200.h"
          
-// shortcut to read a member from a XmlRpcValue, or to return a defaultvalue, it the member does not exist
-template<class T> static T readMember(XmlRpc::XmlRpcValue & value, const std::string & member, const T & defaultvalue)
-{
-  if(value.hasMember(member))
-    return value[member];
-  return defaultvalue;
-}
 
 GGM::Driver_md200::~Driver_md200(){}
 /*

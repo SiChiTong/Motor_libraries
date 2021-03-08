@@ -1,0 +1,3 @@
+uint8 action
+geometry_msgs/PoseStamped start_point
+geometry_msgs/PoseStamped end_point

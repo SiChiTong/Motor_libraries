@@ -1,0 +1,8 @@
+string type
+string dataJson
+---
+geometry_msgs/Twist cmd_vel
+geometry_msgs/PoseStamped pose_stamped
+std_msgs/String string_data
+agv_define/charger_goal charger_goal
+agv_define/nod_goal nod_goal

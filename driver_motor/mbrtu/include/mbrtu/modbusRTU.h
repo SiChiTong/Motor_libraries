@@ -79,7 +79,6 @@ public:
     //  * @return       Size of Incoming Data
     //  */
     // ssize_t (*receiveMsgs) (uint8_t *);
-
 private:
     /*
      * @brief Mb_calcul_crc : compute the crc of a packet and put it at the end

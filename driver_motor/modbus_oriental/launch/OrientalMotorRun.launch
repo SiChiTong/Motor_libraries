@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+  <rosparam command="load" file="$(find modbus_oriental)/motorInfomation.yaml"/> 
+  <arg name="driver_name"        default="orienal_motor"/>
+  <node pkg="modbus_oriental" type="modbus_oriental_node" name="$(arg driver_name)">
+    <param name="baudrate" type="int" value="115200"/> 
+    <param name="port" type="str" value="/dev/ttyS4"/>
+  </node>
+</launch>

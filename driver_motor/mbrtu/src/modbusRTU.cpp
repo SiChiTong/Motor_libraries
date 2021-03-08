@@ -17,6 +17,7 @@ mosbus_rtu::mosbus_rtu(uint16_t poly, const char* devfile, unsigned int baud, pa
     err = false;
     err_no = 0;
     error_msg = "";
+    ROS_INFO("Set POLY value is 0x%x", _poly);
 }      
 
 /*
@@ -48,17 +49,16 @@ int mosbus_rtu::modbus_read_holding_registers(uint8_t slave_id, int address, int
         uint8_t to_rec[MAX_MSG_LENGTH];
         memset(to_rec,'\0',MAX_MSG_LENGTH);
         ssize_t k = 0;
-        k = modbus_receive(to_rec);
-        if (k == -1) {
+        k += modbus_receive(to_rec);
+        if (k == -1 || k == 65535) {
             set_bad_con();
             return BAD_CON;
         }
-        if(k > 0)
+        if(k == 5 + amount * 2)
         {
-            // for(int i = 0; i < k; i++) ROS_INFO("0x%x",to_rec[i]);
             if(!checkCRC16(to_rec,k)) 
             {
-                ROS_ERROR("HERE");
+                ROS_ERROR("modbus_read_holding_registers");
                 set_bad_input();
                 return EX_BAD_DATA;
             }
@@ -103,7 +103,7 @@ int mosbus_rtu::modbus_read_input_registers(uint8_t slave_id, int address, int a
         memset(to_rec,'\0',MAX_MSG_LENGTH);
         ssize_t k = 0;
         k = modbus_receive(to_rec);
-        if (k == -1) {
+        if (k == -1 || k == 65535) {
             set_bad_con();
             return BAD_CON;
         }
@@ -111,6 +111,7 @@ int mosbus_rtu::modbus_read_input_registers(uint8_t slave_id, int address, int a
         {
             if(!checkCRC16(to_rec,k)) 
             {
+                ROS_ERROR("modbus_read_input_registers");
                 set_bad_input();
                 return EX_BAD_DATA;
             }
@@ -154,16 +155,16 @@ int mosbus_rtu::modbus_write_register(uint8_t slave_id, int address, const uint1
         memset(to_rec,'\0',MAX_MSG_LENGTH);
         ssize_t k = 0;
         k = modbus_receive(to_rec);
-        if (k == -1) 
-        {
+        if (k == -1 || k == 65535) {
             set_bad_con();
             return BAD_CON;
         }
-        if(k > 0)
+        if(k == 8)
         { 
             // for(int i = 0; i < k; i++) ROS_INFO("0x%x",to_rec[i]);
             if(!checkCRC16(to_rec, k)) 
             {
+                ROS_ERROR("modbus_write_register");
                 set_bad_input();
                 return EX_BAD_DATA;
             }
@@ -203,15 +204,15 @@ int mosbus_rtu::modbus_write_registers(uint8_t slave_id, int address, int amount
         memset(to_rec,'\0',MAX_MSG_LENGTH);
         ssize_t k = 0;
         k = modbus_receive(to_rec);
-        if(k == -1)
-        {
+        if (k == -1 || k == 65535) {
             set_bad_con();
             return BAD_CON;
         }
-        if(k > 0)
+        if(k == 8)
         { 
             if(!checkCRC16(to_rec, k)) 
             {
+                ROS_ERROR("modbus_write_registers");
                 set_bad_input();
                 return EX_BAD_DATA;
             }
@@ -282,8 +283,11 @@ uint16_t mosbus_rtu::getCRC16(uint8_t *to_send, uint16_t length)
 bool mosbus_rtu::checkCRC16(uint8_t *to_send, uint16_t length)
 {
     uint16_t to_check;
-    to_check = getCRC16(to_send,length-2);
-    return to_send[length -2] == (uint8_t)(to_check & 0x00FFu) && to_send[length -1] == (uint8_t)(to_check >> 8u);
+    to_check = getCRC16(to_send,length - 2);
+    for(int i = 0; i < length; i++) printf("0x%x ",to_send[i]);
+    printf("length(%d) crc16(0x%x 0x%x) 0x%x 0x%x ", (int)length, to_check & 0x00FFu, to_check >> 8u, to_send[length - 2], to_send[length - 1]);
+    printf("\n");
+    return to_send[length - 2] == (uint8_t)(to_check & 0x00FFu) && to_send[length - 1] == (uint8_t)(to_check >> 8u);
 }
 
 /*
@@ -371,10 +375,9 @@ ssize_t mosbus_rtu::modbus_read(uint8_t slave_id, int address, uint amount, int 
  */
 ssize_t mosbus_rtu::modbus_send(uint8_t *to_send, uint16_t length)
 {
-    // if(sendMsgs) 
-    //     return (*sendMsgs)(to_send, length);
-    // else return BAD_CONFIG;
-    return this->sendMsgs(to_send, length);
+    struct stat sb;
+    if(stat(ctx._port, &sb) < 0) reconnect();
+    return sendMsgs(to_send, length);
 }
 
 /*
@@ -384,10 +387,8 @@ ssize_t mosbus_rtu::modbus_send(uint8_t *to_send, uint16_t length)
  */
 ssize_t mosbus_rtu::modbus_receive(uint8_t *buffer) const
 {
-    // if(receiveMsgs)
-    //     return (*receiveMsgs)(buffer);
-    // else return BAD_CONFIG;
-    return this->receiveMsgs(buffer);
+
+    return receiveMsgs(buffer);
 }
 
 /*

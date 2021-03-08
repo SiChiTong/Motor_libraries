@@ -1,0 +1,8 @@
+# Define the goal
+agv_define/nod_goal nod
+---
+# Define the result
+uint32 result
+---
+# Define a feedback message
+string feedback

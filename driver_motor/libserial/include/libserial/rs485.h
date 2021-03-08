@@ -72,6 +72,7 @@ public:
 protected:
     rs485_t ctx;
     uint8_t size_pkg;
+    float param_safety;
 public:
     bool _connected{};      /* Write status connection of devices */
     std::string error_msg;  /* To saved error message */

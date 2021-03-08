@@ -1,0 +1,33 @@
+!!python/object/new:dynamic_reconfigure.encoding.Config
+dictitems:
+  CHARGER_TIME_OUT: 300
+  K: 30
+  L: 0.5
+  NOD_HEAD_TIME_OUT: 300
+  NOD_POSE_TIME_OUT: 3
+  R: 0.085
+  SpeedMotorMax: 4000.0
+  SpeedMotorMin: 80.0
+  THRESHOLD_QUALITY_POSE: 60
+  groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+    dictitems:
+      CHARGER_TIME_OUT: 300
+      K: 30
+      L: 0.5
+      NOD_HEAD_TIME_OUT: 300
+      NOD_POSE_TIME_OUT: 3
+      R: 0.085
+      SpeedMotorMax: 4000.0
+      SpeedMotorMin: 80.0
+      THRESHOLD_QUALITY_POSE: 60
+      groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      id: 0
+      name: Default
+      parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      parent: 0
+      state: true
+      type: ''
+    state: []
+state: []

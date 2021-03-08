@@ -3,8 +3,9 @@
 #define ORIENTAL_MOTOR_BEGIN namespace BLVD20KM {
 #define ORIENTAL_MOTOR BLVD20KM
 #define ORIENTAL_MOTOR_END  }
-
+#define MAX_ID_LENGHT 31
 #define POLY   0xA001
+
 /*
  * Maintenance commands:
  * These commands are used to reset alarms and warnings. They are also used to execute the batch
@@ -274,3 +275,10 @@
 #define MOTOR_DIRECTOIN_STOP                                0
 #define MOTOR_DIRECTOIN_FORWARD                             1
 #define MOTOR_DIRECTOIN_REVERSE                             2
+
+#define MODE_NO_0                                           0x0000
+#define MODE_NO_1                                           0x0001
+#define MODE_NO_2                                           0x0002
+#define MODE_NO_3                                           0x0003
+#define MODE_NO_4                                           0x0004
+#define MODE_NO_5                                           0x0005

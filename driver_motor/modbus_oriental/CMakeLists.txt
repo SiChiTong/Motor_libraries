@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   libserial
   mbrtu
+  nav_converter
 )
 
 ## System dependencies are found with CMake's conventions
@@ -126,6 +127,8 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}_lib
   src/${PROJECT_NAME}_lib.cpp
+  src/${PROJECT_NAME}_diagnostic.cpp
+  src/${PROJECT_NAME}_subscriber.cpp
 )
 
 ## Add cmake target dependencies of the library

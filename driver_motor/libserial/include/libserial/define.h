@@ -2,8 +2,7 @@
 
 #define OFF 0
 #define ON 1
-#define MAX_MSG_LENGTH 1024
-#define HSAT 1.5
+#define MAX_MSG_LENGTH 2048
 
 typedef enum parity {
 	PARITY_NONE,

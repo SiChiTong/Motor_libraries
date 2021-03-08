@@ -1,0 +1,8 @@
+# Define the goal
+agv_define/charger_goal charger
+---
+# Define the result
+uint32 result
+---
+# Define a feedback message
+string feedback

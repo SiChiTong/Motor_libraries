@@ -1,0 +1,17 @@
+L: 0.500                                    # Distance between two wheels
+R: 0.085                                    # wheel radius (in meters per radian)
+K: 30                                          # He so banh rang dong co
+SpeedMotorMax: 4000         # Speed maximum of moter before gear
+SpeedMotorMin: 80             # Speed maximum of moter before gear
+
+conceptForward:
+    V: 0.14                                     # Forward velocity (ie meters per second)*
+    Lm: 0.314                              # The distance from the center of the wheel axis to the center forward line sensor
+    PresentRunning: 100        # Percent speed normal %
+    PresentSlow: 32                 # Percent speed slow %
+
+conceptBackward:
+    V: -0.14                                     # Backward velocity (ie meters per second)*
+    Lm: 0.317                             # The distance from the center of the wheel axis to the center forward line sensor
+    PresentRunning: 100       # Percent speed normal %
+    PresentSlow: 32                # Percent speed slow %
